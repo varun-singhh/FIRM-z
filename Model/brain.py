@@ -11,60 +11,7 @@ import os
 from openai import OpenAI
 from generate_stock_price import get_stock_price_data_range
 from generate_twitter_data import get_tweets, ticker_to_company_name
-
-def get_news(
-    ticker, from_date, to_date, source, api_key_finnhub=None, api_key_polygon=None
-):
-    news = []
-
-    # Finnhub API
-    if source in ["finnhub", "both"] and api_key_finnhub:
-        finnhub_url = "https://finnhub.io/api/v1/company-news"
-        finnhub_params = {
-            "symbol": ticker,
-            "from": from_date,
-            "to": to_date,
-            "token": api_key_finnhub,
-        }
-
-        response_finnhub = requests.get(finnhub_url, params=finnhub_params)
-
-        if response_finnhub.status_code == 200:
-            finnhub_data = response_finnhub.json()
-            for article in finnhub_data:
-                news.append(
-                    {"headline": article["headline"], "summary": article["summary"]}
-                )
-        else:
-            print(
-                f"Failed to retrieve Finnhub data. Status code: {response_finnhub.status_code}"
-            )
-
-    # Polygon API
-    if source in ["polygon", "both"] and api_key_polygon:
-        polygon_url = "https://api.polygon.io/v2/reference/news"
-        polygon_params = {
-            "ticker": ticker,
-            "published_utc.gte": from_date,
-            "published_utc.lte": to_date,
-            "apiKey": api_key_polygon,
-        }
-
-        response_polygon = requests.get(polygon_url, params=polygon_params)
-
-        if response_polygon.status_code == 200:
-            polygon_data = response_polygon.json().get("results", [])
-            for article in polygon_data:
-                news.append(
-                    {"headline": article["title"], "summary": article["description"]}
-                )
-        else:
-            print(
-                f"Failed to retrieve Polygon data. Status code: {response_polygon.status_code}"
-            )
-
-    return news
-
+from generate_news import get_news
 
 GEMINI_api_key = ""
 ChatGPT_key = ""
@@ -163,18 +110,12 @@ def brain(ticker, date):  # Maybe have a dicitonary later which can just convert
     
 
     news_response = GeminiCall(Prompt("news", company_name , news_data ))
-    # Add empty response
-    #news_response = type('Response', (object,), {'text': ''})()
-    print(news_response.text)
-    print("\n")
+
     # Now we are working with the tweet
     tweet_scrap = get_tweets(ticker)
     tweet_data = {"company_name": company_name, "tweets": tweet_scrap}
-    #tweet_response = GeminiCall(Prompt("twitter", company_name , tweet_data ))
-    # Add empty tweet response
-    tweet_response = type('Response', (object,), {'text': ''})()
-    print(tweet_response.text)
-    print("\n")
+    tweet_response = GeminiCall(Prompt("twitter", company_name , tweet_data ))
+
     # Stock market values
     stock_history_data = get_stock_price_data_range(ticker=ticker, date=date )
 
@@ -189,6 +130,6 @@ def brain(ticker, date):  # Maybe have a dicitonary later which can just convert
 
     
     
-#brain("AAPL", "2024-08-15" )
+brain("AAPL", "2024-08-15" )
 
     
