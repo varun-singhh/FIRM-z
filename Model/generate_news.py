@@ -1,16 +1,24 @@
 import requests
+from constants import FINNHUB_API_KEY, POLYGON_API_KEY, NEWS_RANGE
+from utils import get_n_prev_date, get_previous_date, get_string_from_date_time_object
 
-def get_news(ticker, from_date, to_date, source, api_key_finnhub=None, api_key_polygon=None):
-    news = []
+def get_news(ticker, date, source):
     
+    news = []
+    start_date = get_previous_date(date)
+    end_date = get_n_prev_date(date, NEWS_RANGE)
+
+    from_date = get_string_from_date_time_object(start_date)
+    to_date = get_string_from_date_time_object(end_date)
+
     # Finnhub API
-    if source in ["finnhub", "both"] and api_key_finnhub:
+    if source in ["finnhub", "both"]:
         finnhub_url = "https://finnhub.io/api/v1/company-news"
         finnhub_params = {
             "symbol": ticker,
             "from": from_date,
             "to": to_date,
-            "token": api_key_finnhub
+            "token": FINNHUB_API_KEY
         }
         
         response_finnhub = requests.get(finnhub_url, params=finnhub_params)
@@ -26,13 +34,13 @@ def get_news(ticker, from_date, to_date, source, api_key_finnhub=None, api_key_p
             print(f"Failed to retrieve Finnhub data. Status code: {response_finnhub.status_code}")
     
     # Polygon API
-    if source in ["polygon", "both"] and api_key_polygon:
+    if source in ["polygon", "both"]:
         polygon_url = "https://api.polygon.io/v2/reference/news"
         polygon_params = {
             "ticker": ticker,
             "published_utc.gte": from_date,
             "published_utc.lte": to_date,
-            "apiKey": api_key_polygon
+            "apiKey": POLYGON_API_KEY
         }
         
         response_polygon = requests.get(polygon_url, params=polygon_params)
