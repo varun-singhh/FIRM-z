@@ -11,19 +11,16 @@ def get_all_tickers():
     return tickers[:COMPANY_COUNT]
 
 def get_previous_date(date_obj):
-    next_date = date_obj + timedelta(days=-1)
-    return next_date.strftime("%Y-%m-%d")
+    return date_obj + timedelta(days=-1)
 
 def get_n_prev_date(date_obj, n):
-    next_date = date_obj + timedelta(days=-1*n)
-    return next_date.strftime("%Y-%m-%d")
+    return date_obj + timedelta(days=-1*n)
 
 def get_next_date(date_obj):
-    next_date = date_obj + timedelta(days=1)
-    return next_date.strftime("%Y-%m-%d")
+    return date_obj + timedelta(days=1)
 
 def get_date_time_object_from_string(date_str):
-    return datetime.strptime(date_str, "%Y-%m-%d")
+    return datetime.strptime(date_str, "%Y-%m-%d").date()
 
 def get_string_from_date_time_object(date):
     return date.strftime("%Y-%m-%d")

@@ -1,16 +1,16 @@
 import time
 
-from constants import START_DATE, RANGE
+from constants import START_DATE, PREDICTION_RANGE
 from predictions import predict_stock_price_movement
 from generate_stock_price import get_stock_price_data
-from utils import get_all_tickers, get_date_time_object_from_string, get_next_date, get_previous_date, 
+from utils import get_all_tickers, get_date_time_object_from_string, get_string_from_date_time_object, get_next_date, get_previous_date
 
 
 def get_ground_truth_prediction(ticker, date):
 
     today_price = get_stock_price_data(ticker, date)
     prev_day_price = get_stock_price_data(ticker, get_previous_date(date))
-    return today_price > prev_day_price
+    return int(today_price > prev_day_price)
 
 def test():
 
@@ -18,7 +18,7 @@ def test():
     tickers = get_all_tickers()
     correct, wrong, brier = 0, 0, 0
     start_date = get_date_time_object_from_string(START_DATE)
-    interval = int(RANGE)
+    interval = int(PREDICTION_RANGE)
 
     while interval > 0:
         for ticker in tickers:
@@ -33,7 +33,7 @@ def test():
             brier += (ground_truth_prediction - (probability/100)) ** 2
             results.append({
                 'ticker': ticker,
-                'date': start_date, 
+                'date': get_string_from_date_time_object(start_date), 
                 'prediction': prediction, 
                 'probability': probability, 
                 'ground_truth_prediction': ground_truth_prediction
@@ -46,3 +46,4 @@ def test():
         print(results)
         time.sleep(40)
 
+test()

@@ -2,6 +2,7 @@ import google.generativeai as genai
 from openai import OpenAI
 
 from constants import GEMINI_API_KEY, GPT_API_KEY, MODEL
+from data_initializer import ticker_to_company_name
 from generate_stock_price import get_stock_price_data_range
 from generate_news import get_news
 from generate_twitter_data import get_tweets, ticker_to_company_name
@@ -47,7 +48,7 @@ def predict_stock_price_movement(ticker, date):
     news_response = call_llm(prompt)
 
     # Tweets
-    tweet_scrap = get_tweets(ticker)  # Fix this
+    tweet_scrap = get_tweets(ticker, date) 
     tweet_data = {"company_name": company_name, "tweets": tweet_scrap}
     prompt = RELEVANT_TWEETS_PROMPT.format(company_name=company_name, data=tweet_data)
     tweet_response = call_llm(prompt)

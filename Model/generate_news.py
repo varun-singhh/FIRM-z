@@ -3,11 +3,11 @@ from constants import FINNHUB_API_KEY, POLYGON_API_KEY, NEWS_RANGE
 from utils import get_n_prev_date, get_previous_date, get_string_from_date_time_object
 
 def get_news(ticker, date, source):
-    
+
     news = []
     start_date = get_previous_date(date)
     end_date = get_n_prev_date(date, NEWS_RANGE)
-
+    
     from_date = get_string_from_date_time_object(start_date)
     to_date = get_string_from_date_time_object(end_date)
 
